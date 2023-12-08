@@ -39,41 +39,35 @@ class System:
         return neighbours
 
     def find_route(self,source,destination):
-        def dfs(curr_row, curr_col, path):
-            if curr_row < 0 or curr_row >= len(self.matrix) or curr_col < 0 or curr_col >= len(self.matrix[0]):
-                # Out of bounds, return False
-                return False
+        #empty que and visited lists
+        visited = []
+        que = []
 
-            if [curr_row, curr_col] in path:
-                # Already visited, return False
-                return False
+        #add 1st node in visited and que lists
+        visited.append(source)
+        que.append(visited)
 
-            # Check if altitude of current cell is higher than or equal to destination cell
-            if self.matrix[curr_row][curr_col] > self.matrix[destination[0]][destination[1]]:
-                return False
 
-            # Add the current cell to the path
-            path.append([curr_row, curr_col])
-
-            if [curr_row, curr_col] == destination:
-                # Reached the destination, return True
-                return True
-
-            # Recursively explore neighboring cells
-            if dfs(curr_row - 1, curr_col, path) or dfs(curr_row, curr_col + 1, path) \
-                    or dfs(curr_row + 1, curr_col, path) or dfs(curr_row, curr_col - 1, path):
-                return True
-
-            # If no path found, backtrack and remove the current cell from the path
-            path.pop()
-            return False
-
-        # Initialize an empty path and call the DFS function starting from the source cell
-        path = []
-        dfs(source[0], source[1], path)
-
-        # Return the resulting path as a 2D list of grid coordinates
-        return path        #empty que and visited lists
+        #traverse all the nodes from que till the que is not empty
+        # or destination is not found
+        while que:
+            #get the first path from que and mark it visited
+            visited = que.pop(0)
+            #get the last node from the visited path
+            last = visited[len(visited)-1]
+            #if the last node from visited path is destination then return the visited path
+            if last == destination:
+                return visited
+            #get each neighbours of the last node one by one
+            for neighbour in self.get_neighbours(last[0], last[1]):
+                #if neighbour is not visited then make a new path with the existing nodes from visited list and the neighbour
+                # and add the new path in que
+                if neighbour not in visited:
+                    new_path = visited.copy()
+                    new_path.append(neighbour)
+                    que.append(new_path) 
+        #return empty list if path not found
+        return []
 
 
     def Bluevalley_to_Smallville_route(self):
